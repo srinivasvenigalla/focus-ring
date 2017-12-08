@@ -316,7 +316,17 @@ function init() {
     if (e.altKey || e.ctrlKey || e.metaKey)
       return false;
 
-    var index = navigationKeys.indexOf(e.keyCode);
+    if (event.clientX > 0 && event.clientY > 0) // filter out real mouse events
+			return false;
+
+		let keyCode = e.which || e.keyCode;
+
+		if (keyCode === 1) {
+      // map the triggered click from keyboard to Enter Key
+			keyCode = 13;
+		}
+
+    var index = navigationKeys.indexOf(keyCode);
     var tagName = e.target.tagName;
     var inputType = tagName === 'INPUT' ? e.target.type : undefined;
     var ariaRole = e.target.getAttribute('role');
@@ -326,27 +336,27 @@ function init() {
       return false;
 
     // ArrowUp, ArrowDown, ArrowLeft, ArrowRight, Home/End, PageUp/PageDown
-    if (e.keyCode > 32 && e.keyCode < 41)
+    if (keyCode > 32 && keyCode < 41)
       // Return true if target is an input or has a role and is whitelisted as 'incrementable'.
       return (inputType && behavior.incrementable.inputType[inputType])
         || (ariaRole && behavior.incrementable.role[ariaRole]);
 
     // Enter or Space
-    if (e.keyCode == 13 || e.keyCode == 32)
+    if (keyCode == 13 || keyCode == 32)
       // Return true if target is an input or has a role and is whitelisted as 'selectable'.
       return (inputType && behavior.selectable.inputType[inputType])
         || (ariaRole && behavior.selectable.role[ariaRole]);
 
     // Esc key when target is a descendant of a dialog or menu.
-    if (e.keyCode == 27)
+    if (keyCode == 27)
       return event.target.closest('[role$="dialog"],[role="menu"]') !== null;
 
     // Backspace or Delete
-    if (e.keyCode == 8 || e.keyCode == 46)
+    if (keyCode == 8 || keyCode == 46)
       // Return true if target has a role and is whitelisted as 'deletable'.
       return ariaRole && behavior.deletable.role[ariaRole];
 
-    return e.keyCode == 9;
+    return keyCode == 9;
   }
 
   /**
@@ -485,6 +495,11 @@ function init() {
   }
 
   document.addEventListener('keydown', onKeyDown, true);
+  /*
+   * route the click events also to the same keyhandler
+   * to handle the triggered clicks
+  */
+  document.addEventListener('click', onKeyDown, true);
   document.addEventListener('mousedown', onMouseDown, true);
   document.addEventListener('focus', onFocus, true);
   document.addEventListener('blur', onBlur, true);

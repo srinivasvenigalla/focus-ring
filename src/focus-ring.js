@@ -113,15 +113,15 @@ function init() {
     if (e.altKey || e.ctrlKey || e.metaKey)
       return false;
 
-    if (event.clientX > 0 && event.clientY > 0) // filter out real mouse events
-			return false;
+    // filter out real mouse events
+    if (event.clientX > 0 && event.clientY > 0)
+       return false;
 
-		let keyCode = e.which || e.keyCode;
-
-		if (keyCode === 1) {
+    let keyCode = e.which || e.keyCode;
+    if (keyCode === 1) {
       // map the triggered click from keyboard to Enter Key
-			keyCode = 13;
-		}
+      keyCode = 13;
+    }
 
     var index = navigationKeys.indexOf(keyCode);
     var tagName = e.target.tagName;
